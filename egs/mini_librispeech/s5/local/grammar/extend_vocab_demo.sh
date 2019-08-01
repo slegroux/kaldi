@@ -303,8 +303,8 @@ if [ $stage -le 8 ]; then
   # We just replace the graph with the one in $treedir/extvocab_nosp_combined.
 
   steps/nnet3/decode.sh --acwt 1.0 --post-decode-acwt 10.0 --frames-per-chunk 140 --nj 38 \
-    --cmd "queue.pl --mem 4G --num-threads 4" --online-ivector-dir exp/nnet3/ivectors_dev_clean_2_hires \
-    exp/chain/tree_sp/extvocab_nosp_combined data/dev_clean_2_hires exp/chain/tdnn1h_sp/decode_tgsmall_dev_clean_2_ev_nosp_comb
+    --cmd "run.pl --mem 4G --num-threads 4" --online-ivector-dir exp/nnet3/ivectors_dev_clean_2_hires \
+    exp/chain/tree_sp/extvocab_nosp_combined data/dev_clean_2_hires exp/chain/tdnn1i_sp/decode_tgsmall_dev_clean_2_ev_nosp_comb
 
 
 
@@ -319,8 +319,8 @@ fi
 
 if [ $stage -le 9 ]; then
   steps/nnet3/decode_grammar.sh --acwt 1.0 --post-decode-acwt 10.0 --frames-per-chunk 140 --nj 38 \
-    --cmd "queue.pl --mem 4G --num-threads 4" --online-ivector-dir exp/nnet3/ivectors_dev_clean_2_hires \
-    exp/chain/tree_sp/extvocab_nosp_combined data/dev_clean_2_hires exp/chain/tdnn1h_sp/decode_tgsmall_dev_clean_2_ev_nosp_comb_gra
+    --cmd "run.pl --mem 4G --num-threads 4" --online-ivector-dir exp/nnet3/ivectors_dev_clean_2_hires \
+    exp/chain/tree_sp/extvocab_nosp_combined data/dev_clean_2_hires exp/chain/tdnn1i_sp/decode_tgsmall_dev_clean_2_ev_nosp_comb_gra
 
   #  The WER when decoding with the grammar FST directly is exactly the same:
   # s5:  grep WER exp/chain/tdnn1h_sp/decode_tgsmall_dev_clean_2_ev_nosp_comb_gra/wer_* | utils/best_wer.sh
