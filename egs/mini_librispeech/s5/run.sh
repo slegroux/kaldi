@@ -196,10 +196,10 @@ fi
 
 # Train a chain model
 if [ $stage -le 9 ]; then
-  local/chain/run_tdnn.sh --stage 0
+  local/chain/run_tdnn.sh --stage 14
 fi
 
-# local/grammar/simple_demo.sh
+local/grammar/simple_demo.sh
 
 # Don't finish until all background decoding jobs are finished.
 wait
