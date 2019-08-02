@@ -17,19 +17,27 @@ RUN apt-get update && \
         subversion \
         python2.7 \
         python3 \
+        python-dev \
+        python-setuptools \
+        python-pip \
         zlib1g-dev \
         ca-certificates \
         patch \
         ffmpeg \
-	vim && \
+        swig \
+	    vim && \
+    pip install --upgrade pip && \
+    hash pip && \
+    pip install numpy && \
     rm -rf /var/lib/apt/lists/*
 
-RUN ln -s /usr/bin/python2.7 /usr/bin/python 
+RUN rm /usr/bin/python && ln -s /usr/bin/python2.7 /usr/bin/python 
 
 RUN git clone --depth 1 https://github.com/kaldi-asr/kaldi.git /opt/kaldi && \
     cd /opt/kaldi && \
     cd /opt/kaldi/tools && \
     ./extras/install_mkl.sh && \
+    ./extras/install_sequitur.sh && \
     make -j $(nproc) && \
     cd /opt/kaldi/src && \
     ./configure --shared --use-cuda && \
