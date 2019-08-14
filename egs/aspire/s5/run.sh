@@ -15,11 +15,14 @@ set -e
 # Set this to somewhere where you want to put your aspire data, or where
 # someone else has already put it.  You'll want to change this
 # if you're not on the CLSP grid.
-aspire_data=/export/corpora/LDC/LDC2017S21/IARPA-ASpIRE-Dev-Sets-v2.0/data  # JHU
+# aspire_data=/export/corpora/LDC/LDC2017S21/IARPA-ASpIRE-Dev-Sets-v2.0/data  # JHU
 
 # the next command produces the data in local/train_all
-local/fisher_data_prep.sh /export/corpora3/LDC/LDC2004T19 /export/corpora3/LDC/LDC2005T19 \
-   /export/corpora3/LDC/LDC2004S13 /export/corpora3/LDC/LDC2005S13
+fisher_dir=$DATA/LDC/Fisher
+#local/fisher_data_prep.sh /export/corpora3/LDC/LDC2004T19 /export/corpora3/LDC/LDC2005T19 \
+#   /export/corpora3/LDC/LDC2004S13 /export/corpora3/LDC/LDC2005S13
+local/fisher_data_prep.sh ${fisher_dir}/LDC2004T19 ${fisher_dir}/LDC2005T19 \
+  ${fisher_dir}/LDC2004S13 ${fisher_dir}/LDC2005S13
 
 local/fisher_prepare_dict.sh
 
