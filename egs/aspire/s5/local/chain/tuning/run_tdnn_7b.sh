@@ -69,7 +69,7 @@ if [ $stage -le 8 ]; then
 fi
 
 if [ -z $min_seg_len ]; then
-  min_seg_len=$(python -c "print ($frames_per_eg+5)/100.0")
+  min_seg_len=$(python -c "print(($frames_per_eg+5)/100.0)")
 fi
 
 if [ $stage -le 9 ]; then
@@ -188,6 +188,7 @@ if [ $stage -le 12 ]; then
   steps/nnet3/chain/train.py --stage $train_stage \
     --egs.dir "$common_egs_dir" \
     --cmd "$decode_cmd" \
+    --use-gpu=wait \
     --feat.online-ivector-dir exp/nnet3/ivectors_train_min${min_seg_len} \
     --feat.cmvn-opts "--norm-means=false --norm-vars=false" \
     --chain.xent-regularize $xent_regularize \
