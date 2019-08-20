@@ -8,13 +8,17 @@ set -e
 . utils/parse_options.sh
 
 
-tree_dir=/home/workfit/Sylvain/Data/kaldi_models/aspire/exp/chain/tdnn_7b
+# tree_dir=/home/workfit/Sylvain/Data/kaldi_models/aspire/exp/chain/tdnn_7b
+#tree_dir=/home/workfit/Sylvain/Data/kaldi_models/rdi/nut-1120-big-conv-epoch10-rnn/model
+model_dir=/home/workfit/Sylvain/Data/kaldi_models/kaldi-generic-en-tdnn_fl-r20190609/
+tree_dir=$model_dir/model
 lang_base=data/lang_basevocab
 lang_ext=data/lang_extvocab
+og_dict=$model_dir/data/local/dict
 
 
 if [ $stage -eq 0 ]; then
-  cp -r data/local/dict data/local/dict_basevocab
+  cp -r $og_dict data/local/dict_basevocab
   echo "#nonterm:unk" > data/local/dict_basevocab/nonterminals.txt
 
   utils/prepare_lang.sh data/local/dict_basevocab \
