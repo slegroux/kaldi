@@ -4,7 +4,7 @@
 set -e
 stage=0
 # Location of aspire data.
-aspire_data=/export/corpora/LDC/LDC2017S21/IARPA-ASpIRE-Dev-Sets-v2.0/data  # for JHU
+aspire_data=$DATA/LDC/IARPA/LDC2017S21/IARPA-ASpIRE-Dev-Sets-v2.0/data  # for JHU
 
 mean_rms=0.0417 # determined from the mean rms value of data/train_rvb/mean_rms
 . ./path.sh # Needed for KALDI_ROOT
@@ -55,7 +55,7 @@ if [ $stage -le 1 ]; then
   
   echo -n > $tmpdir/text.1 || exit 1;
   
-  python -c "
+  python2 -c "
 import sys
 trans_file = open('$tmpdir/text.1', 'w')
 utt2spk_file = open('$dev/utt2spk', 'w')
@@ -104,7 +104,7 @@ if [ $stage -le 3 ]; then
     utils/make_absolute.sh $f
   done > $tmpdir/wav_abs.flist
   
-  cat $tmpdir/wav_abs.flist | python -c "
+  cat $tmpdir/wav_abs.flist | python2 -c "
 import sys, os, subprocess, re
 
 for line in sys.stdin.readlines():
@@ -131,7 +131,7 @@ if [ $stage -le 4 ]; then
       utils/make_absolute.sh $f
     done > $tmpdir/wav_${dataset}_abs.flist
     cat $tmpdir/wav_${dataset}_abs.flist | \
-    python -c "
+    python2 -c "
 import sys, os, subprocess, re
 
 lines = sys.stdin.readlines()
