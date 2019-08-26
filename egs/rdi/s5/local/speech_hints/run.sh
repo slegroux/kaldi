@@ -7,17 +7,21 @@ export KALDI_SLG=/home/workfit/Sylvain/kaldi-slg
 export KALDI_SLG_ASPIRE=${KALDI_SLG}/egs/aspire/s5
 
 # create dict
-src_dict=${KALDI_SLG_ASPIRE}/data/local/dict #will be copied to output_dir/local
+#src_dict=${KALDI_SLG_ASPIRE}/data/local/dict #will be copied to output_dir/local
+src_dict=$DATA/voicea-speechhints-data/dict
 
 # create LM
-lm=$KALDI_SLG_ASPIRE/data/local/lm/3gram-mincount/lm_unpruned.gz
+#lm=$KALDI_SLG_ASPIRE/data/local/lm/3gram-mincount/lm_unpruned.gz
+lm=$DATA/voicea-speechhints-data/lm/lm_unpruned.gz
 
 # create Acoustic Model
-model_dir=exp/nut-1120-big-conv-epoch10-rnn/model
+#model_dir=exp/nut-1120-big-conv-epoch10-rnn/model
+model=$DATA/kaldi_models/rdi/nut-1120-big-conv-epoch10-rnn/model
 
 # read speech hints and add to lexicon
 speech_hints_list=local/speech_hints/speech_hints.txt
-g2p_model_dir=$KALDI_SLG/tools/g2p/en_us/models
+#g2p_model_dir=$KALDI_SLG/tools/g2p/en_us/models
+g2p_model_dir=$DATA/voicea-speechhints-data/g2p
 output_dir=/tmp/test
 
 ./local/speech_hints/generate_oov_lexicon.sh $speech_hints_list $g2p_model_dir $output_dir
