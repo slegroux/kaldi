@@ -15,8 +15,9 @@ output=data/dev_clean_2/kws/
 . ./utils/parse_options.sh
 . ./path.sh
 
-set -e -o pipefail
-set -o nounset                              # Treat unset variables as an error
+#set -e -o pipefail
+#set -o nounset                              # Treat unset variables as an error
+set -x
 
 mkdir -p $output
 if [ $stage -le 1 ] ; then

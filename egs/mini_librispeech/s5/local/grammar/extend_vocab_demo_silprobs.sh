@@ -95,7 +95,7 @@ if [ $stage -le 4 ]; then
   echo "$0: generating g2p entries for $(wc -l <$tree_dir/extvocab_lexicon/words) words"
 
   if $run_g2p; then
-    steps/dict/apply_g2p.sh $tree_dir/extvocab_lexicon/words $tree_dir/extvocab_g2p  $tree_dir/extvocab_lexicon
+    steps/dict/apply_g2p.sh $tree_dir/extvocab_lexicon/words $tree_dir  $tree_dir/extvocab_lexicon
   else
     cat <<EOF >$tree_dir/extvocab_lexicon//lexicon.lex
 HARDWIGG	0.962436	HH AA1 R D W IH1 G
@@ -241,9 +241,9 @@ EOF
   fi
 
   # extend_lang.sh needs it to have basename 'lexiconp.txt'.
-  mv $tree_dir/extvocab_lexicon/lexicon.lex $tree_dir/extvocab_lexicon/lexiconp.txt
+  cp -f $tree_dir/extvocab_lexicon/lexicon.lex $tree_dir/extvocab_lexicon/lexiconp.txt
 
-  [ -f data/lang_extvocab/G.fst ] && rm data/lang_extvocab/G.fst
+  [ -f data/lang_extvocab/G.fst ] && rm -f data/lang_extvocab/G.fst
   utils/lang/extend_lang.sh  data/lang_basevocab $tree_dir/extvocab_lexicon/lexiconp.txt  data/lang_extvocab
 fi
 
@@ -298,29 +298,29 @@ if [ $stage -le 8 ]; then
   # decode the test data in the current (at the time of writing) chain TDNN system
   # local/chain/run_tdnn.sh (as figured out by running it from that stage), was:
   # steps/nnet3/decode.sh --acwt 1.0 --post-decode-acwt 10.0 --frames-per-chunk 140 --nj 38 \
-  #   --cmd "queue.pl --mem 4G --num-threads 4" --online-ivector-dir exp/nnet3/ivectors_dev_clean_2_hires \
-  #   exp/chain/tree_sp/graph_tgsmall data/dev_clean_2_hires exp/chain/tdnn1h_sp/decode_tgsmall_dev_clean_2
+  #   --cmd "run.pl --mem 4G --num-threads 4" --online-ivector-dir exp/nnet3/ivectors_dev_clean_2_hires \
+  #   exp/chain/tree_sp/graph_tgsmall data/dev_clean_2_hires exp/chain/tdnn1i_sp/decode_tgsmall_dev_clean_2
 
   # We just replace the graph with the one in $treedir/extvocab_combined.
 
   steps/nnet3/decode.sh --acwt 1.0 --post-decode-acwt 10.0 --frames-per-chunk 140 --nj 38 \
-    --cmd "queue.pl --mem 4G --num-threads 4" --online-ivector-dir exp/nnet3/ivectors_dev_clean_2_hires \
-    exp/chain/tree_sp/extvocab_combined data/dev_clean_2_hires exp/chain/tdnn1h_sp/decode_tgsmall_dev_clean_2_ev_comb
+    --cmd "run.pl --mem 4G --num-threads 4" --online-ivector-dir exp/nnet3/ivectors_dev_clean_2_hires \
+    exp/chain/tree_sp/extvocab_combined data/dev_clean_2_hires exp/chain/tdnn1i_sp/decode_tgsmall_dev_clean_2_ev_comb
 
-  # s5: grep WER exp/chain/tdnn1h_sp/decode_tgsmall_dev_clean_2_ev_comb/wer_* | utils/best_wer.sh
-  # %WER 11.42 [ 2300 / 20138, 227 ins, 275 del, 1798 sub ] exp/chain/tdnn1h_sp/decode_tgsmall_dev_clean_2_ev_comb/wer_12_0.0
+  grep WER exp/chain/tdnn1i_sp/decode_tgsmall_dev_clean_2_ev_comb/wer_* | utils/best_wer.sh
+  # %WER 11.42 [ 2300 / 20138, 227 ins, 275 del, 1798 sub ] exp/chain/tdnn1i_sp/decode_tgsmall_dev_clean_2_ev_comb/wer_12_0.0
 
   #.. versus the baseline below:
-  # s5: grep WER exp/chain/tdnn1h_sp/decode_tgsmall_dev_clean_2/wer_* | utils/best_wer.sh
-  # %WER 12.01 [ 2418 / 20138, 244 ins, 307 del, 1867 sub ] exp/chain/tdnn1h_sp/decode_tgsmall_dev_clean_2/wer_13_0.0
+  grep WER exp/chain/tdnn1i_sp/decode_tgsmall_dev_clean_2/wer_* | utils/best_wer.sh
+  # %WER 12.01 [ 2418 / 20138, 244 ins, 307 del, 1867 sub ] exp/chain/tdnn1i_sp/decode_tgsmall_dev_clean_2/wer_13_0.0
 fi
 
 if [ $stage -le 9 ]; then
  steps/nnet3/decode_grammar.sh --acwt 1.0 --post-decode-acwt 10.0 --frames-per-chunk 140 --nj 38 \
-    --cmd "queue.pl --mem 4G --num-threads 4" --online-ivector-dir exp/nnet3/ivectors_dev_clean_2_hires \
-    exp/chain/tree_sp/extvocab_combined data/dev_clean_2_hires exp/chain/tdnn1h_sp/decode_tgsmall_dev_clean_2_ev_comb_gra
+    --cmd "run.pl --mem 4G --num-threads 4" --online-ivector-dir exp/nnet3/ivectors_dev_clean_2_hires \
+    exp/chain/tree_sp/extvocab_combined data/dev_clean_2_hires exp/chain/tdnn1i_sp/decode_tgsmall_dev_clean_2_ev_comb_gra
 
  # WER with grammar decoding is exactly the same as decoding from the converted FST.
- # grep WER exp/chain/tdnn1h_sp/decode_tgsmall_dev_clean_2_ev_comb_gra/wer_* | utils/best_wer.sh
- # %WER 11.42 [ 2300 / 20138, 227 ins, 275 del, 1798 sub ] exp/chain/tdnn1h_sp/decode_tgsmall_dev_clean_2_ev_comb_gra/wer_12_0.0
+ grep WER exp/chain/tdnn1i_sp/decode_tgsmall_dev_clean_2_ev_comb_gra/wer_* | utils/best_wer.sh
+ # %WER 11.42 [ 2300 / 20138, 227 ins, 275 del, 1798 sub ] exp/chain/tdnn1i_sp/decode_tgsmall_dev_clean_2_ev_comb_gra/wer_12_0.0
 fi

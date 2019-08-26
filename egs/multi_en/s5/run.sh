@@ -6,19 +6,21 @@
 
 . ./cmd.sh
 . ./path.sh
+set -x
 
 # paths to corpora (see below for example)
-ami=
-fisher=
-librispeech=
-swbd=
-tedlium2=
+ami="$DATA/ami/amicorpus"
+FISHER="$DATA/LDC/Fisher"
+fisher="$FISHER/LDC2004T19 $FISHER/LDC2005T19 $FISHER/LDC2004S13 $FISHER/LDC2005S13"
+librispeech="$DATA/Librispeech/Librispeech"
+swbd="$DATA/LDC/SWB/LDC97S62"
+tedlium2="$DATA/TEDLIUM_release-3/legacy"
 wsj0=
 wsj1=
-eval2000=
+eval2000="$DATA/LDC/hub5/LDC2002S09/hub5e_00 $DATA/LDC/hub5/LDC2002T43"
 rt03=
 
-set -e
+
 # check for kaldi_lm
 which get_word_map.pl > /dev/null
 if [ $? -ne 0 ]; then
@@ -80,18 +82,18 @@ if [ $stage -le 2 ]; then
   # tedlium
   local/tedlium_prepare_data.sh $tedlium2
   # wsj
-  local/wsj_data_prep.sh $wsj0/??-{?,??}.? $wsj1/??-{?,??}.?
-  local/wsj_format_data.sh
-  utils/copy_data_dir.sh --spk_prefix wsj_ --utt_prefix wsj_ data/wsj/train_si284 data/wsj/train
-  rm -r data/wsj/train_si284 2>/dev/null || true
+  # local/wsj_data_prep.sh $wsj0/??-{?,??}.? $wsj1/??-{?,??}.?
+  # local/wsj_format_data.sh
+  # utils/copy_data_dir.sh --spk_prefix wsj_ --utt_prefix wsj_ data/wsj/train_si284 data/wsj/train
+  # rm -r data/wsj/train_si284 2>/dev/null || true
   # hub4_en
-  local/hub4_en_data_prep.sh $hub4_en_96 $hub4_en_97
+  #local/hub4_en_data_prep.sh $hub4_en_96 $hub4_en_97
   # eval2000 (test)
   local/eval2000_data_prep.sh $eval2000
   utils/fix_data_dir.sh data/eval2000/test
   # rt03 (test)
-  local/rt03_data_prep.sh $rt03
-  utils/fix_data_dir.sh data/rt03/test
+  # local/rt03_data_prep.sh $rt03
+  # utils/fix_data_dir.sh data/rt03/test
 fi
 
 # Normalize transcripts
@@ -162,7 +164,8 @@ fi
 # make training features
 if [ $stage -le 7 ]; then
   mfccdir=mfcc
-  corpora="hub4_en fisher librispeech_100 librispeech_360 librispeech_500 swbd tedlium wsj"
+  #corpora="hub4_en fisher librispeech_100 librispeech_360 librispeech_500 swbd tedlium wsj"
+  corpora="fisher librispeech_100 librispeech_360 librispeech_500 swbd tedlium"
   for c in $corpora; do
     (
      data=data/$c/train
@@ -185,7 +188,8 @@ if [ $stage -le 8 ]; then
   # get rid of spk2gender files because not all corpora have them
   rm data/*/train/spk2gender 2>/dev/null || true
   # create reco2channel_and_file files for wsj and librispeech
-  for c in wsj librispeech_100 librispeech_360 librispeech_500; do
+  #for c in wsj librispeech_100 librispeech_360 librispeech_500; do
+  for c in librispeech_100 librispeech_360 librispeech_500; do
     awk '{print $1, $1, "A"}' data/$c/train/wav.scp > data/$c/train/reco2file_and_channel;
   done
   # apply standard fixes, then validate
@@ -198,7 +202,8 @@ fi
 # make test features
 if [ $stage -le 9 ]; then
   mfccdir=mfcc
-  corpora="tedlium eval2000 rt03 librispeech"
+  #corpora="tedlium eval2000 rt03 librispeech"
+  corpora="tedlium eval2000 librispeech"
   for c in $corpora; do
     data=data/$c/test
     steps/make_mfcc.sh --mfcc-config conf/mfcc.conf \

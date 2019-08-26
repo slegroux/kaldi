@@ -13,12 +13,12 @@ fi
 
 # Install python-devel package if not already available
 # first, makes sure distutils.sysconfig usable
-if ! $(python -c "import distutils.sysconfig" &> /dev/null); then
+if ! $(python2 -c "import distutils.sysconfig" &> /dev/null); then
     echo "$0: WARNING: python library distutils.sysconfig not usable, this is necessary to figure out the path of Python.h." >&2
     echo "Proceeding with installation." >&2
 else
   # get include path for this python version
-  INCLUDE_PY=$(python -c "from distutils import sysconfig as s; print(s.get_python_inc())")
+  INCLUDE_PY=$(python2 -c "from distutils import sysconfig as s; print(s.get_python_inc())")
   if [ ! -f "${INCLUDE_PY}/Python.h" ]; then
       echo "$0 : ERROR: python-devel/python-dev not installed" >&2
       if which yum >&/dev/null; then
@@ -102,7 +102,7 @@ echo >&2 "SEQUITUR_PACKAGE: ${site_packages_dir:-}"
 echo >&2 "SEQUITUR: $SEQUITUR"
 echo >&2 "PYTHONPATH: ${PYTHONPATH:-}"
 mkdir -p $SEQUITUR
-PYTHONPATH=${PYTHONPATH:-}:$SEQUITUR python setup.py install --prefix `pwd`
+PYTHONPATH=${PYTHONPATH:-}:$SEQUITUR python2 setup.py install --prefix `pwd`
 ) || {
   echo >&2 "Problem installing sequitur!"
   exit 1

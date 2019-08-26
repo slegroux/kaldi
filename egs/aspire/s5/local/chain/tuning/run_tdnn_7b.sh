@@ -64,6 +64,8 @@ if [ $stage -le 8 ]; then
   # we build the tree using clean features (data/train) rather than
   # the augmented features (data/train_rvb) to get better alignments
 
+  # modify script to use left-biphone tree (for grammar on the fly decoding)
+
   steps/nnet3/chain/build_tree.sh --frame-subsampling-factor 3 \
       --context-opts "--context-width=2 --central-position=1" \
       --cmd "$train_cmd" 11000 data/train $lang exp/tri5a $treedir

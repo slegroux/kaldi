@@ -18,8 +18,10 @@ train_discriminative=false  # by default, don't do the GMM-based discriminative
 set -e # exit on error
 has_fisher=true
 
+export SWB='/home/workfit/Sylvain/Data/LDC/SWB/LDC97S62'
 if [ $stage -le 0 ]; then
-  local/swbd1_data_download.sh /export/corpora3/LDC/LDC97S62
+  #local/swbd1_data_download.sh /export/corpora3/LDC/LDC97S62
+  local/swbd1_data_download.sh $SWB
   # local/swbd1_data_download.sh /mnt/matylda2/data/SWITCHBOARD_1R2 # BUT,
 fi
 
@@ -39,7 +41,7 @@ if [ $stage -le 2 ]; then
   # Note: if you are using this link, make sure you rename conv_tab.csv to conv.tab
   # after downloading.
   # Usage: local/swbd1_data_prep.sh /path/to/SWBD [/path/to/SWBD_docs]
-  local/swbd1_data_prep.sh /export/corpora3/LDC/LDC97S62
+  local/swbd1_data_prep.sh $SWB
   # local/swbd1_data_prep.sh /home/dpovey/data/LDC97S62
   # local/swbd1_data_prep.sh /data/corpora0/LDC97S62
   # local/swbd1_data_prep.sh /mnt/matylda2/data/SWITCHBOARD_1R2 # BUT,
@@ -55,7 +57,7 @@ if [ $stage -le 3 ]; then
   # only part 1 transcripts ~700hr are used)
 
   # If you have the Fisher data, you can set this "fisher_dir" variable.
-  fisher_dirs="/export/corpora3/LDC/LDC2004T19/fe_03_p1_tran/ /export/corpora3/LDC/LDC2005T19/fe_03_p2_tran/"
+  fisher_dirs="$DATA/LDC/LDC2004T19/fe_03_p1_tran/ $DATA/LDC/LDC2005T19/fe_03_p2_tran/"
   # fisher_dirs="/exports/work/inf_hcrc_cstr_general/corpora/fisher/transcripts" # Edinburgh,
   # fisher_dirs="/mnt/matylda2/data/FISHER/fe_03_p1_tran /mnt/matylda2/data/FISHER/fe_03_p2_tran" # BUT,
   local/swbd1_train_lms.sh data/local/train/text \
