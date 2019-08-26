@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# (c) 2019 sylvainlg@voicea.ai
 
 nj=10
 #graph_dir=exp/model/graph
