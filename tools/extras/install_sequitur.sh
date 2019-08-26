@@ -3,6 +3,7 @@ set -u
 set -e
 
 
+
 # Make sure we are in the tools/ directory.
 if [ `basename $PWD` == extras ]; then
   cd ..
