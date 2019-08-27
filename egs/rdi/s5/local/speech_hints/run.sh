@@ -3,9 +3,6 @@
 
 . path.sh
 
-export KALDI_SLG=/home/workfit/Sylvain/kaldi-slg
-export KALDI_SLG_ASPIRE=${KALDI_SLG}/egs/aspire/s5
-
 # create dict
 #src_dict=${KALDI_SLG_ASPIRE}/data/local/dict #will be copied to output_dir/local
 src_dict=$DATA/voicea-speechhints-data/dict
@@ -16,7 +13,7 @@ lm=$DATA/voicea-speechhints-data/lm/lm_unpruned.gz
 
 # create Acoustic Model
 #model_dir=exp/nut-1120-big-conv-epoch10-rnn/model
-model=$DATA/kaldi_models/rdi/nut-1120-big-conv-epoch10-rnn/model
+model_dir=$DATA/kaldi_models/rdi/nut-1120-big-conv-epoch10-rnn/model
 
 # read speech hints and add to lexicon
 speech_hints_list=local/speech_hints/speech_hints.txt
