@@ -10,29 +10,27 @@ nj=10 # number of jobs
 ndecode_jobs=10 # number of decoding jobs
 num_gpu=1 # num of gpus to use in xvector extract
 stage=1
-
+score=false
 
 #data_dir=$DATA/kaldi_sets/rdi/test_10_16k
 model_dir=exp/nut-1120-big-conv-epoch10-rnn/model
+#decode_dir=/tmp
 
 #model_dir=exp/nut-webex-epoch10
 #model_dir=exp/model
 #graph_dir=$model_dir/graph
 #graph_dir=$BABEL/graphs/fisher_vca_rev_webex/mixpocolm_folded_3g/graph_rdi_2nd
 #graph_dir=$BABEL/graphs/f_v_r_w/mixpocolm_folded_3g/nut_webex_epoch10_graph
-graph_dir=$BABEL/graphs/f_v_r_w/mixpocolm_folded_3g/nut_1120_big_conv_epoch_10_graph
-lang_tag=f_v_r_w
-# lang_tag=f_v_r_w
-
-
+#graph_dir=$BABEL/graphs/f_v_r_w/mixpocolm_folded_3g/nut_1120_big_conv_epoch_10_graph
+graph_dir=/tmp/test/extvocab_combined
+#lang_tag=f_v_r_w
+tag=ext
 
 . utils/parse_options.sh
 
 data_dir=$1
 
-	
-decodeDir=${model_dir}/decode_$(basename $data_dir)_${lang_tag}
-
+decodeDir=${model_dir}/decode_$(basename $data_dir)_${tag}
 
 # fix data dir
 if [ $stage -eq 1 ]; then
@@ -40,9 +38,6 @@ if [ $stage -eq 1 ]; then
 fi
 utils/fix_data_dir.sh $data_dir
 utils/fix_data_dir.sh ${data_dir}_hires
-
-
-
 
 # ivector
 #ivector_model=$DATA/kaldi_models/0007_voxceleb_v1_1a
@@ -55,7 +50,6 @@ iVectorDir=${data_dir}_hires/ivectors
 #ivector_mfcc_conf=$ivector_model/conf/mfcc.conf
 ivector_mfcc_conf=conf/mfcc_hires.conf
 
-
 # xvectors
 xvector_model=$DATA/kaldi_models/0007_voxceleb_v2_1a
 #xvector_model=$DATA/kaldi_models/0008_sitw_v2_1a
@@ -67,8 +61,6 @@ xvector_mfcc_conf=conf/mfcc.conf
 
 # directory to save ivectors and xvectors after being merged
 newIVectorDir=$data_dir/new_ivectors
-
-
 
 # extract features (mfcc_hires)
 if [ $stage -eq 1 ]; then
@@ -85,7 +77,6 @@ if [ $stage -eq 2 ]; then
 	steps/online/nnet2/extract_ivectors_online.sh --cmd "run.pl" --nj $nj ${data_dir}_hires $iVectorExtractor $iVectorDir || exit 1;
 fi
 
-
 # extract features xvector
 if [ $stage -eq 3 ]; then
 	echo "[INFO] extract mfcc"
@@ -100,7 +91,6 @@ if [ $stage -eq 4 ]; then
 	sid/compute_vad_decision.sh --vad_config $xvector_vad_conf --nj $nj --cmd "run.pl" $data_dir
 	sid/nnet3/xvector/extract_xvectors.sh --use-gpu true --cmd "run.pl" --nj $num_gpu $xVectorExtractor $data_dir $xVectorDir
 fi
-
 
 # combine them by repeating the xvector for all frames then concat it with the corresponding ivector per frame
 if [ $stage -eq 5 ]; then
@@ -118,15 +108,18 @@ if [ $stage -eq 6 ]; then
         --acwt 1.0 --post-decode-acwt 10.0 \
         --frames-per-chunk $frames_per_chunk \
         --nj $nj --cmd "run.pl" \
+		--skip-scoring true \
         --max-active 10000 --beam 18.0 \
         --lattice-beam 8.0 \
         --online-ivector-dir $newIVectorDir \
         --scoring-opts "--word_ins_penalty -1 --min_lmwt 13 --max_lmwt 13" \
         $graph_dir ${data_dir}_hires $decodeDir
-
-	$ASPIRE/score.sh $decodeDir
 fi
 
+if [ "$score" = true ]; then
+	echo "[INFO] score using sclite"
+	$ASPIRE/score.sh $decodeDir
+fi
 
 
 # cleanup
@@ -137,5 +130,3 @@ fi
 # rm -rf $data_dir/log
 # rm -rf $data_dir/split*
 # rm cmvn.scp
-
-

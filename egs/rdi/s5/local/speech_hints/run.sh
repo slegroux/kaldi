@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # (c) 2019 sylvainlg@voicea.ai
 
+# script needs to be run from egs/rdi/s5 root folder (kaldi style)
 . path.sh
 
 # create dict
@@ -31,7 +32,7 @@ output_dir=/tmp/test
 ./local/speech_hints/make_generic_graph.sh $src_dict $lm $model_dir $output_dir
 
 lang_base=$output_dir/lang_basevocab
-lexicon=$model_dir/extvocab_lexicon/lexiconp.txt
+lexicon=$output_dir/extvocab_lexicon/lexiconp.txt
 lang_ext=$output_dir/lang_extvocab
 
 # generates:
