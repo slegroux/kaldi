@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
-audio_file=$1
-data_path=$(./audiofile2specifiers.sh $audio_file)
 
 model_dir=exp/nut-1120-big-conv-epoch10-rnn2/model
 graph_dir=/tmp/test/extvocab_combined/
 tag=ext
+
+. utils/parse_options.sh
+
+audio_file=$1
+
+data_path=$(./audiofile2specifiers.sh $audio_file)
+
 ./decode_vca.sh --nj 1 --model_dir $model_dir --graph_dir $graph_dir --tag $tag $data_path
 decode_dir=${model_dir}/decode_$(basename $data_path)_${tag}
 utt=$(basename $audio_file .wav)
