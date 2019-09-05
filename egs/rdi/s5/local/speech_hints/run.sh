@@ -46,3 +46,5 @@ lang_ext=$output_dir/lang_extvocab
 combined_graph=$output_dir/extvocab_combined
 
 ./local/speech_hints/combine_graphs.sh $generic_graph $extended_graph $lang_ext $combined_graph
+
+cat $output_dir/extvocab_top/phones/align_lexicon.int $output_dir/extvocab_combined/phones/align_lexicon.int > $output_dir/extvocab_combined/align_lexicon.int
