@@ -21,6 +21,7 @@ RUN apt-get update && \
         python-setuptools \
         python-pip \
         zlib1g-dev \
+        gfortran \
         ca-certificates \
         patch \
         ffmpeg \
