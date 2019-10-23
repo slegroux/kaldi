@@ -6,7 +6,7 @@
 stage=0
 
 # the location of the LDC corpus; this location works for the CLSP grid.
-datadir=/export/corpora5/LDC/LDC2006S37
+datadir=$DATA/LDC/Heroico/LDC2006S37
 
 # The corpus and lexicon are on openslr.org
 #speech_url="http://www.openslr.org/resources/39/LDC2006S37.tar.gz"
