@@ -46,6 +46,7 @@ tree_dir=exp/chain${nnet3_affix}/tree_sp${tree_affix:+_$tree_affix}
 train_ivector_dir=exp/nnet3${nnet3_affix}/ivectors_${train_set}_sp_hires
 train_data_dir=data/${train_set}_sp_hires
 lat_dir=exp/chain${nnet3_affix}/${gmm}_${train_set}_sp_lats
+#sudo nvidia-smi -c 3
 
 if [ $stage -le 14 ]; then
  
@@ -72,7 +73,7 @@ if [ $stage -le 14 ]; then
     --egs.dir="$common_egs_dir" \
     --egs.opts="--frames-overlap-per-eg 0 --online-cmvn $online_cmvn" \
     --cleanup.remove-egs=$remove_egs \
-    --use-gpu=true \
+    --use-gpu=wait \
     --reporting.email="$reporting_email" \
     --feat-dir=$train_data_dir \
     --tree-dir=$tree_dir \
