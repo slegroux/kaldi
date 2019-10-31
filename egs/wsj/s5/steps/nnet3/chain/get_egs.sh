@@ -371,7 +371,7 @@ if [ $stage -le 2 ]; then
       nnet3-chain-get-egs $ivector_opts --srand=$srand \
          $egs_opts --normalization-fst-scale=$normalization_fst_scale \
          $trans_mdl_opt $chaindir/normalization.fst \
-        "$valid_feats" ark,s,cs:- "ark:$dir/valid_all.cegs" || exit 1
+        "$valid_feats" ark:- "ark:$dir/valid_all.cegs" || exit 1
     $cmd $dir/log/create_train_subset.log \
       utils/filter_scp.pl $dir/train_subset_uttlist $dir/lat_special.scp \| \
       lattice-align-phones --replace-output-symbols=true $latdir/final.mdl scp:- ark:- \| \
@@ -380,7 +380,7 @@ if [ $stage -le 2 ]; then
       nnet3-chain-get-egs $ivector_opts --srand=$srand \
         $egs_opts --normalization-fst-scale=$normalization_fst_scale \
         $trans_mdl_opt $chaindir/normalization.fst \
-        "$train_subset_feats" ark,s,cs:- "ark:$dir/train_subset_all.cegs" || exit 1
+        "$train_subset_feats" ark:- "ark:$dir/train_subset_all.cegs" || exit 1
     sleep 5  # wait for file system to sync.
     echo "$0: Getting subsets of validation examples for diagnostics and combination."
     if $generate_egs_scp; then
