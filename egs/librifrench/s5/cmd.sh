@@ -7,8 +7,8 @@
 
 #a) JHU cluster options
 export train_cmd="run.pl"
-export decode_cmd="run.pl --mem 4G"
-export mkgraph_cmd="run.pl --mem 8G"
+export decode_cmd="run.pl"
+export mkgraph_cmd="run.pl"
 
 
 #b) BUT cluster options
