@@ -5,7 +5,7 @@ set -euo pipefail
 
 njobs=$(($(nproc)-1))
 gmm=tri3b
-online_cmvn=true
+online_cmvn_iextractor=true
 nnet3_affix=_online_cmn
 train_set=train
 test_sets=test
@@ -33,6 +33,7 @@ fi
 local/nnet3/run_ivector_common.sh --stage $stage \
                                   --njobs $njobs \
                                   --n_speaker_test $n_speaker_test \
+                                  --online_cmvn_iextractor $online_cmvn_iextractor \
                                   --train_set $train_set \
                                   --test_sets $test_sets \
                                   --gmm $gmm \
