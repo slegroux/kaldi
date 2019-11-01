@@ -102,9 +102,14 @@ if [ $stage -le 16 ]; then
           --nj $nspeakers --cmd "$decode_cmd"  --num-threads 4 \
           --online-ivector-dir exp/nnet3${nnet3_affix}/ivectors_${data}_hires \
           $tree_dir/graph_tgsmall data/${data}_hires ${dir}/decode_tgsmall_${data} || exit 1
+      
+      for x in ${dir}/decode_tgsmall_${data}; do [ -d $x ] && grep WER $x/wer_* | utils/best_wer.sh; done
+      
       steps/lmrescore_const_arpa.sh --cmd "$decode_cmd" \
         data/lang_test_{tgsmall,tglarge} \
        data/${data}_hires ${dir}/decode_{tgsmall,tglarge}_${data} || exit 1
+      
+      for x in ${dir}/decode_tglarge_${data}; do [ -d $x ] && grep WER $x/wer_* | utils/best_wer.sh; done
     ) || touch $dir/.error &
   done
   wait
@@ -134,9 +139,14 @@ if $test_online_decoding && [ $stage -le 17 ]; then
         --acwt 1.0 --post-decode-acwt 10.0 \
         --nj $nspk --cmd "$decode_cmd" \
         $tree_dir/graph_tgsmall data/${data} ${dir}_online/decode_tgsmall_${data} || exit 1
+
+      for x in ${dir}_online/decode_tgsmall_${data}; do [ -d $x ] && grep WER $x/wer_* | utils/best_wer.sh; done
+
       steps/lmrescore_const_arpa.sh --cmd "$decode_cmd" \
         data/lang_test_{tgsmall,tglarge} \
         data/${data}_hires ${dir}_online/decode_{tgsmall,tglarge}_${data} || exit 1
+      
+      for x in ${dir}_online/decode_tglarge_${data}; do [ -d $x ] && grep WER $x/wer_* | utils/best_wer.sh; done
     ) || touch $dir/.error &
   done
   wait
