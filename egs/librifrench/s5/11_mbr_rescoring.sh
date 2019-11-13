@@ -2,13 +2,13 @@
 
 # Set -e here so that we catch if any executable fails immediately
 set -euo pipefail
-set -x
+#set -x
 
 stage=15
-affix=1k
-nnet3_affix=_online_cmn
+
 data=test
 lang=lang_chain
+decode_dir=
 
 echo "$0 $@"  # Print the command line for logging
 
@@ -26,11 +26,7 @@ fi
 
 nspeakers=$(cat data/test/spk2utt| wc -l)
 
-dir=exp/chain${nnet3_affix}/tdnn${affix}_sp
-decode_dir=${dir}/decode_tgsmall_${data}
 decode_dir_mbr=$decode_dir.mbr
-
-
 
 if [ $stage -eq 15 ]; then
   cp -r $decode_dir{,.mbr}
