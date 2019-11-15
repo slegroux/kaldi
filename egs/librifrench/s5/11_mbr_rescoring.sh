@@ -16,13 +16,6 @@ echo "$0 $@"  # Print the command line for logging
 . ./path.sh
 . ./utils/parse_options.sh
 
-if ! cuda-compiled; then
-  cat <<EOF && exit 1
-This script is intended to be used with GPUs but you have not compiled Kaldi with CUDA
-If you want to use GPUs (and have them), go to src/, and configure and make on a machine
-where "nvcc" is installed.
-EOF
-fi
 
 nspeakers=$(cat data/test/spk2utt| wc -l)
 
