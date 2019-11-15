@@ -3,3 +3,4 @@ mfcc_aug/*
 mfcc_hires/*
 steps/*
 utils/*
+RIRS_NOISES/*
