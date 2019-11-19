@@ -22,7 +22,7 @@ online_cmvn=false #cnn-tdnn
 srand=0
 chunk_width=140,100,160
 common_egs_dir=
-remove_egs=true
+remove_egs=false
 reporting_email=
 
 xent_regularize=0.1
@@ -65,7 +65,7 @@ if [ $stage -le 14 ]; then
     --trainer.add-option="--optimization.memory-compression-level=2" \
     --trainer.srand=$srand \
     --trainer.max-param-change=2.0 \
-    --trainer.num-epochs=20 \
+    --trainer.num-epochs=300 \
     --trainer.frames-per-iter=3000000 \
     --trainer.optimization.num-jobs-initial=2 \
     --trainer.optimization.num-jobs-final=8 \
