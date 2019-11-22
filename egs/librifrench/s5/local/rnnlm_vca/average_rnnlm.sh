@@ -14,7 +14,7 @@
 
 set -e -o pipefail -u
 
-rnnlm_dir=exp/rnnlm_fvrwtl
+rnnlm_dir=exp/rnnlm
 begin=
 end=
 
