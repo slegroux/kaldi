@@ -10,7 +10,7 @@ source_dir=exp/chain/cnn_tdnn1a76b_sp/decode_tgsmall_test
 
 . ./utils/parse_options.sh
 
-output_dir=${source_dir}_rnnlm
+output_dir=${source_dir}_$(basename $rnnlm_dir)
 
 ./rnnlm/lmrescore_pruned.sh \
   --cmd "run.pl --mem 4G" \
@@ -20,8 +20,8 @@ output_dir=${source_dir}_rnnlm
   $output_dir
 
 
-for i in ${source_dir}*; do
-  #local/score.sh --decode_mbr true $data_dir $lang_dir $i
+for x in ${source_dir}*; do
+  #local/score.sh --decode_mbr true $data_dir $lang_dir $x
   [ -d $x ] && grep WER $x/wer_* | utils/best_wer.sh;
 done
 
