@@ -11,6 +11,8 @@ affix=1k
 tree_affix=
 lang_test=data/lang_test_SRILM
 
+test_online_decoding=true
+
 train_set=train
 test_sets=test
 
@@ -46,6 +48,7 @@ tree_dir=exp/chain${nnet3_affix}/tree_sp${tree_affix:+_$tree_affix}
 train_ivector_dir=exp/nnet3${nnet3_affix}/ivectors_${train_set}_sp_hires
 train_data_dir=data/${train_set}_sp_hires
 lat_dir=exp/chain${nnet3_affix}/${gmm}_${train_set}_sp_lats
+lang=data/lang_chain
 #sudo nvidia-smi -c 3
 
 if [ $stage -le 14 ]; then
@@ -123,6 +126,7 @@ fi
 if $test_online_decoding && [ $stage -le 17 ]; then
   # note: if the features change (e.g. you add pitch features), you will have to
   # change the options of the following command line.
+  set -x
   steps/online/nnet3/prepare_online_decoding.sh \
     --mfcc-config conf/mfcc_hires.conf \
     --online-cmvn-config conf/online_cmvn.conf \
