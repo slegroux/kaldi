@@ -9,27 +9,21 @@
 set -x
 # Begin configuration section.
 dir=exp/rnnlm
-embedding_dim=800
+embedding_dim=800 #800
 lstm_rpd=200
 lstm_nrpd=200
 stage=-10
 train_stage=-10
-epochs=20
-wordlist=$BABEL/graphs/f_v_r_w/mixpocolm_folded_3g/lang/words.txt
-text_dir=data/rnnlm/f_v_r_w_t_l
+epochs=40
+wordlist=data/lang_chain/words.txt
+text_dir=data/rnnlm
 
 . ./cmd.sh
 . utils/parse_options.sh
 [ -z "$cmd" ] && cmd=$train_cmd
 
-#text_from_audio=data/train/text
-#wordlist=data/lang_chain/words.txt
-#wordlist=$BABEL/graphs/eval/mixpocolm_folded_3g/lang/words.txt
-
 #dev_sents=10000
-# text_dir=data/rnnlm/text
-text_dir=data/rnnlm/f_v_r_w_t_l
-#text_dir=$BABEL/graphs/fisher_vca_rev_webex/mixpocolm_folded_3g/data_dir_rnnlm
+
 mkdir -p $dir/config
 set -e
 
@@ -38,17 +32,14 @@ for f in $text $wordlist; do
     echo "$0: expected file $f to exist; search for local/prepare_data.sh and utils/prepare_lang.sh in run.sh" && exit 1
 done
 
-if [ $stage -eq -42 ]; then
+if [ $stage -le 0 ]; then
   mkdir -p $text_dir
-  gunzip -c db/TEDLIUM_release-3/LM/*.en.gz | sed 's/ <\/s>//g' > $text_dir/train.txt
-  # shuffle text from audio and lm
-  cat $text_from_audio | cut -d ' ' -f2- | cat $text_dir/train.txt |\
-    shuf > data/rnnlm/full_lm_data.shuffled
-  # create dev and train sets based on audio and LM data
-  cat data/rnnlm/full_lm_data.shuffled | head -n $dev_sents> $text_dir/dev.txt
-  cat data/rnnlm/full_lm_data.shuffled | tail -n +$[$dev_sents+1] > $text_dir/ted.txt
-
+  cat data/train/text | sed 's/ <\/s>//g'  | cut -d ' ' -f2- > $text_dir/train.txt
+  cat data/test/text | sed 's/ <\/s>//g'  | cut -d ' ' -f2- > $text_dir/dev.txt
+  
 fi
+
+
 
 if [ $stage -le 1 ]; then
   cp $wordlist $dir/config/
@@ -57,19 +48,14 @@ if [ $stage -le 1 ]; then
 
   # words that are not present in words.txt but are in the training or dev data, will be
   # mapped to <unk> during training.
-  echo "<unk>" >$dir/config/oov.txt
+  echo "!SIL" >$dir/config/oov.txt
 
   cat > $dir/config/data_weights.txt <<EOF
-ted 1 0.5
-librispeech 1 0.25
-fisher 1 1.0
-rev 1 1.0
-vca 1 1.0
-webex 1 4.0
+train 1 1.0
 EOF
 
   rnnlm/get_unigram_probs.py --vocab-file=$dir/config/words.txt \
-                             --unk-word="<unk>" \
+                             --unk-word="!SIL" \
                              --data-weights-file=$dir/config/data_weights.txt \
                              $text_dir | awk 'NF==2' >$dir/config/unigram_probs.txt
 
@@ -78,7 +64,7 @@ EOF
                            --use-constant-feature=true \
                            --top-word-features=10000 \
                            --min-frequency 1.0e-03 \
-                           --special-words='<s>,</s>,<brk>,<unk>' \
+                           --special-words='<s>,</s>,<brk>,!SIL' \
                            $dir/config/words.txt > $dir/config/features.txt
 
   cat >$dir/config/xconfig <<EOF
@@ -93,6 +79,7 @@ EOF
   rnnlm/validate_config_dir.sh $text_dir $dir/config
 fi
 
+
 if [ $stage -le 2 ]; then
   # the --unigram-factor option is set larger than the default (100)
   # in order to reduce the size of the sampling LM, because rnnlm-get-egs
@@ -103,7 +90,7 @@ fi
 echo "rnnlm dir done"
 
 if [ $stage -le 3 ]; then
-  rnnlm/train_rnnlm.sh --num-jobs-initial 2 --num-jobs-final 8 \
+  rnnlm/train_rnnlm.sh --num-jobs-initial 1 --num-jobs-final 1 \
                        --stage $train_stage --num-epochs $epochs --cmd "$cmd" $dir
 fi
 
