@@ -98,7 +98,7 @@ if [ $stage -le 16 ]; then
 
   for data in $test_sets; do
     (
-      nspk=$(wc -l <data/${data}_hires/spk2utt)
+      nspkeakers=$(wc -l <data/${data}_hires/spk2utt)
       steps/nnet3/decode.sh \
           --acwt 1.0 --post-decode-acwt 10.0 \
           --frames-per-chunk $frames_per_chunk \
