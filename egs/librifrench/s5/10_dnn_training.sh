@@ -7,7 +7,8 @@ stage=14
 
 gmm=tri3b
 nnet3_affix=_online_cmn
-affix=1k
+#affix=1k #tdnn
+affix=1a76b #cnntdnn
 tree_affix=
 lang_test=data/lang_test_SRILM
 
@@ -17,15 +18,18 @@ train_set=train
 test_sets=test
 
 train_stage=-10
-online_cmvn=true
+#online_cmvn=true #tdnn
+online_cmvn=false #cnn-tdnn
 
 srand=0
 chunk_width=140,100,160
 common_egs_dir=
-remove_egs=true
+remove_egs=false
 reporting_email=
 
 xent_regularize=0.1
+
+dir=exp/chain${nnet3_affix}/tdnn${affix}_sp
 
 echo "$0 $@"  # Print the command line for logging
 
@@ -43,7 +47,6 @@ fi
 
 nspeakers=$(cat data/test/spk2utt| wc -l)
 
-dir=exp/chain${nnet3_affix}/tdnn${affix}_sp
 tree_dir=exp/chain${nnet3_affix}/tree_sp${tree_affix:+_$tree_affix}
 train_ivector_dir=exp/nnet3${nnet3_affix}/ivectors_${train_set}_sp_hires
 train_data_dir=data/${train_set}_sp_hires
@@ -65,7 +68,7 @@ if [ $stage -le 14 ]; then
     --trainer.add-option="--optimization.memory-compression-level=2" \
     --trainer.srand=$srand \
     --trainer.max-param-change=2.0 \
-    --trainer.num-epochs=20 \
+    --trainer.num-epochs=300 \
     --trainer.frames-per-iter=3000000 \
     --trainer.optimization.num-jobs-initial=2 \
     --trainer.optimization.num-jobs-final=8 \
