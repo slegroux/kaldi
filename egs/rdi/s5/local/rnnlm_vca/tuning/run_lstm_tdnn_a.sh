@@ -8,13 +8,15 @@
 
 set -x
 # Begin configuration section.
-dir=exp/rnnlm_fvrwtl
+dir=exp/rnnlm
 embedding_dim=800
 lstm_rpd=200
 lstm_nrpd=200
 stage=-10
 train_stage=-10
 epochs=20
+wordlist=$BABEL/graphs/f_v_r_w/mixpocolm_folded_3g/lang/words.txt
+text_dir=data/rnnlm/f_v_r_w_t_l
 
 . ./cmd.sh
 . utils/parse_options.sh
@@ -23,7 +25,7 @@ epochs=20
 #text_from_audio=data/train/text
 #wordlist=data/lang_chain/words.txt
 #wordlist=$BABEL/graphs/eval/mixpocolm_folded_3g/lang/words.txt
-wordlist=$BABEL/graphs/f_v_r_w/mixpocolm_folded_3g/lang/words.txt
+
 #dev_sents=10000
 # text_dir=data/rnnlm/text
 text_dir=data/rnnlm/f_v_r_w_t_l
@@ -101,7 +103,7 @@ fi
 echo "rnnlm dir done"
 
 if [ $stage -le 3 ]; then
-  rnnlm/train_rnnlm.sh --num-jobs-initial 1 --num-jobs-final 1 \
+  rnnlm/train_rnnlm.sh --num-jobs-initial 2 --num-jobs-final 8 \
                        --stage $train_stage --num-epochs $epochs --cmd "$cmd" $dir
 fi
 
