@@ -42,7 +42,7 @@ if [ $stage -le 0 ]; then
   fi
 
   if [ ! -f data/$train_set/reco2dur ]; then
-    utils/data/get_reco2dur.sh --nj 6 --cmd "$train_cmd" data/$train_set || exit 1;
+    utils/data/get_reco2dur.sh --nj $(nproc) --cmd "$train_cmd" data/$train_set || exit 1;
   fi
 
   # Make a version with reverberated speech
@@ -104,10 +104,7 @@ if [ $stage -le 2 ]; then
   # To be used later to generate alignments for augmented data
   echo "$0: Extracting low-resolution MFCCs for the augmented data. Useful for generating alignments"
   mfccdir=mfcc_aug
-  if [[ $(hostname -f) == *.clsp.jhu.edu ]] && [ ! -d $mfccdir/storage ]; then
-    date=$(date +'%m_%d_%H_%M')
-    utils/create_split_dir.pl /export/b0{1,2,3,4}/$USER/kaldi-data/mfcc/swbd-$date/s5c/$mfccdir/storage $mfccdir/storage
-  fi
+
   steps/make_mfcc.sh --cmd "$train_cmd" --nj 50 \
                      data/${train_set}_aug exp/make_mfcc/${train_set}_aug $mfccdir
   steps/compute_cmvn_stats.sh data/${train_set}_aug exp/make_mfcc/${train_set}_aug $mfccdir
