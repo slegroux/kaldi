@@ -20,7 +20,7 @@ n_speaker_test=10
 . ./cmd.sh
 . ./path.sh
 . utils/parse_options.sh
-
+ 
 gmm_dir=exp/${gmm}
 ali_dir=exp/${gmm}_ali_${train_set}_sp
 

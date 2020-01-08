@@ -7,9 +7,9 @@ stage=0
 # Augmentation options
 aug_list="reverb babble music noise clean" # Original train dir is referred to as `clean`
 num_reverb_copies=1
-use_ivectors=true
-train_set=
-clean_ali=
+use_ivectors=false
+train_set=train
+clean_ali=tri3b_ali
 
 
 # End configuration section.
