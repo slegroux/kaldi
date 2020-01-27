@@ -6,7 +6,7 @@
 stage=0
 
 # the location of the LDC corpus; this location works for the CLSP grid.
-datadir=$DATA/LDC/Heroico/LDC2006S37
+datadir=$DATA/LDC2006S37
 
 # The corpus and lexicon are on openslr.org
 #speech_url="http://www.openslr.org/resources/39/LDC2006S37.tar.gz"
@@ -21,6 +21,7 @@ set -e
 set -o pipefail
 set -u
 
+njobs=$(($(nproc)-1))
 
 # don't change tmpdir, the location is used explicitly in scripts in local/.
 tmpdir=data/local/tmp
@@ -82,7 +83,7 @@ if [ $stage -le 7 ]; then
       rm data/$fld/cmvn.scp
     fi
 
-    steps/make_mfcc.sh --cmd "$train_cmd" --nj 4 data/$fld
+    steps/make_mfcc.sh --cmd "$train_cmd" --nj $njobs data/$fld
     utils/fix_data_dir.sh data/$fld
     steps/compute_cmvn_stats.sh data/$fld
     utils/fix_data_dir.sh data/$fld
@@ -91,7 +92,7 @@ fi
 
 if [ $stage -le 8 ]; then
   echo "$0 monophone training"
-  steps/train_mono.sh --nj 8 --cmd "$train_cmd" data/train data/lang exp/mono || exit 1;
+  steps/train_mono.sh --nj $njobs --cmd "$train_cmd" data/train data/lang exp/mono || exit 1;
 
   # evaluation
   (
@@ -107,7 +108,7 @@ fi
 
 if [ $stage -le 9 ]; then
   # align with monophones
-  steps/align_si.sh --nj 8 --cmd "$train_cmd" \
+  steps/align_si.sh --nj $njobs --cmd "$train_cmd" \
     data/train data/lang exp/mono exp/mono_ali
 
   echo "$0 Starting  triphone training in exp/tri1"
@@ -130,7 +131,7 @@ fi
 if [ $stage -le 10 ]; then
   echo "$0: Starting delta system alignment"
   steps/align_si.sh \
-    --nj 8 --cmd "$train_cmd" data/train data/lang exp/tri1 exp/tri1_ali
+    --nj $njobs --cmd "$train_cmd" data/train data/lang exp/tri1 exp/tri1_ali
 
   echo "$0: starting lda+mllt triphone training in exp/tri2b"
 
@@ -154,7 +155,7 @@ if  [ $stage -le 11 ]; then
   echo "$0: Starting LDA+MLLT system alignment"
 
   steps/align_si.sh \
-    --use-graphs true --nj 8 --cmd "$train_cmd" \
+    --use-graphs true --nj $njobs --cmd "$train_cmd" \
     data/train data/lang exp/tri2b exp/tri2b_ali
 
   echo "$0 Starting (SAT) triphone training in exp/tri3b"
@@ -164,7 +165,7 @@ if  [ $stage -le 11 ]; then
 
   echo "$0 Starting exp/tri3b_ali"
   steps/align_fmllr.sh \
-    --nj 8 --cmd "$train_cmd" \
+    --nj $njobs --cmd "$train_cmd" \
     data/train data/lang exp/tri3b exp/tri3b_ali
 
   wait  # wait for the previous decoding jobs to finish in case there's just one
