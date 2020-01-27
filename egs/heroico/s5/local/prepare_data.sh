@@ -39,7 +39,7 @@ if [ $stage -le 0 ]; then
 
   utils/fix_data_dir.sh $tmpdir/heroico/answers
 
-  cat $recordings_transcripts | iconv -f ISO-8859-1 -t UTF-8 | \
+  cat $recordings_tsranscripts | iconv -f ISO-8859-1 -t UTF-8 | \
     tr -d '\r' | local/heroico_recordings_make_lists.pl
 
   utils/fix_data_dir.sh $tmpdir/heroico/recordings/train

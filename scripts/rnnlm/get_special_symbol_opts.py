@@ -28,7 +28,7 @@ upper_special_symbols = [key.upper() for key in special_symbols]
 
 lower_ids = {}
 upper_ids = {}
-input_stream = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
+input_stream = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8', errors='replace')
 for line in input_stream:
     fields = line.split()
     assert(len(fields) == 2)

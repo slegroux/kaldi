@@ -3,6 +3,8 @@
 # Copyright  2017  Jian Wang
 # License: Apache 2.0.
 
+from IPython import embed
+
 import os
 import argparse
 import sys
@@ -77,7 +79,7 @@ def get_all_data_sources_except_dev(text_dir):
 #                    value is a tuple (repeated_times_per_epoch, weight)
 def read_data_weights(weights_file, data_sources):
     data_weights = {}
-    with open(weights_file, 'r', encoding="utf-8") as f:
+    with open(weights_file, 'r', encoding="utf-8", errors='replace') as f:
         for line in f:
             try:
                 fields = line.split()
@@ -102,9 +104,10 @@ def read_data_weights(weights_file, data_sources):
 # return the vocab, which is a dict mapping the word to a integer id.
 def read_vocab(vocab_file):
     vocab = {}
-    with open(vocab_file, 'r', encoding="utf-8") as f:
+    with open(vocab_file, 'r', encoding="utf-8", errors='replace') as f:
         for line in f:
             fields = line.split()
+            #embed()
             assert len(fields) == 2
             if fields[0] in vocab:
                 sys.exit(sys.argv[0] + ": duplicated word({0}) in vocab: {1}"
@@ -131,7 +134,7 @@ def get_counts(data_sources, data_weights, vocab):
         if weight == 0.0:
             continue
 
-        with open(counts_file, 'r', encoding="utf-8") as f:
+        with open(counts_file, 'r', encoding="utf-8", errors='replace') as f:
             for line in f:
                 fields = line.split()
                 if len(fields) != 2: print("Warning, should be 2 cols:", fields, line, file=sys.stderr);
