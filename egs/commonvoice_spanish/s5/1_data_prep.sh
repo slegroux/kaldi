@@ -1,56 +1,78 @@
 #!/bin/bash
 
-
-data='/home/workfit/Sylvain/Data/Librifrench' # Set this to directory where you put the data
-adapt=false # Set this to true if you want to make the data as the vocabulary file,
-	    # example: dès que (original text) => dès_que (vocabulary word)
-liaison=true # Set this to true if you want to makes lexicon while taking into account liaison for French language
-stage=0
-data_train=train
-data_test=test
-
-
+. ./cmd.sh
 . ./path.sh
+
+stage=0
+
+datadir=$DATA/Spanish/common_voice
+
+# The corpus and lexicon are on openslr.org
+#speech_url="http://www.openslr.org/resources/39/LDC2006S37.tar.gz"
+lexicon_url="http://www.openslr.org/resources/34/santiago.tar.gz"
+
+# Location of the Movie subtitles text corpus
+subtitles_url="http://opus.lingfil.uu.se/download.php?f=OpenSubtitles2018/en-es.txt.zip"
+
 . utils/parse_options.sh
 
+set -e
+set -o pipefail
+set -u
+set -x
 
-if [ $stage == 0 ]; then
-  echo "Preparing data as Kaldi data directories"
-  for part in {$data_train,$data_test}; do
-    local/data_prep.sh --apply_adaptation $adapt $data/$part data/$part
-  done
+njobs=$(($(nproc)-1))
+
+# don't change tmpdir, the location is used explicitly in scripts in local/.
+tmpdir=data/local/tmp
+
+if [ $stage -le 0 ]; then
+  if [ ! -d $datadir ]; then
+    echo "$0: please download and un-tar https://voice-prod-bundler-ee1969a6ce8178826482b88e843c335139bd3fb4.s3.amazonaws.com/cv-corpus-4-2019-12-10/es.tar.gz"
+    echo "  and set $datadir to the directory where it is located."
+    exit 1
+  fi
+  if [ ! -s santiago.txt ]; then
+    echo "$0: downloading the lexicon"
+    wget -c http://www.openslr.org/resources/34/santiago.tar.gz
+    tar -xvzf santiago.tar.gz
+  fi
+  # Get data for lm training
+  local/subs_download.sh $subtitles_url
+fi
+
+if [ $stage -le 1 ]; then
+  echo "Making lists for building models."
+  local/prepare_data.sh $datadir
+fi
+
+if [ $stage -le 2 ]; then
+  mkdir -p data/local/dict $tmpdir/dict
+  local/prepare_dict.sh
 fi
 
 
-if [ $stage == 1 ]; then
-  ## Optional G2P training scripts.
-  #local/g2p/train_g2p.sh lexicon conf
-  echo "Preparing dictionary"
-  local/dic_prep.sh lexicon conf/model-2
+if [ $stage -le 3 ]; then
+  utils/prepare_lang.sh \
+    data/local/dict "<UNK>" \
+    data/local/lang data/lang
 fi
 
+exit 1
 
-if [ $stage == 2 ]; then
-  echo "Preparing language model"
-  local/lm_prep.sh --order 3 --lm_system IRSTLM
-  local/lm_prep.sh --order 3 --lm_system SRILM
-  ## Optional Perplexity of the built models
-  # local/compute_perplexity.sh --order 3 --text data/test test IRSTLM
-  # local/compute_perplexity.sh --order 3 --text data/test test SRILM
+if [ $stage -le 4 ]; then
+  mkdir -p $tmpdir/subs/lm
+  local/subs_prepare_data.pl
 fi
 
-
-if [ $stage == 3 ]; then
-  echo "Prepare data/lang and data/local/lang directories"
-  [ $liaison == false ] && echo "No liaison is applied" && \
-  utils/prepare_lang.sh --position-dependent-phones true data/local/dict "!SIL" data/local/lang data/lang
-  [ $liaison == true ] && echo "Liaison is applied in the creation of lang directories" && \
-  local/language_liaison/prepare_lang_liaison.sh --sil-prob 0.3 data/local/dict "!SIL" data/local/lang data/lang
-  [ ! $liaison == true ] && [ ! $liaison == false ] && echo "verify the value of the variable liaison" && exit 1
+if [ $stage -le 5 ]; then
+  echo "point 1"
+  local/prepare_lm.sh  $tmpdir/subs/lm/in_vocabulary.txt
 fi
 
-
-if [ $stage == 4 ]; then
-  echo "Prepare G.fst and data/{train,dev,test} directories"
-  local/format_lm.sh --liaison $liaison
+if [ $stage -le 6 ]; then
+  echo "point 2"
+  utils/format_lm.sh \
+    data/lang data/local/lm/trigram.arpa.gz data/local/dict/lexicon.txt \
+    data/lang_test
 fi
