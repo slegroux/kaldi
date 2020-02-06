@@ -3,10 +3,9 @@
 # Set -e here so that we catch if any executable fails immediately
 set -euo pipefail
 
-n_speakers_test_set=$(cat data/test/spk2utt| wc -l)
+
 stage=10
-decode_nj=$n_speakers_test_set
-njobs=$(($(nproc)-1))
+
 train_set=train
 test_sets=test
 gmm=tri3b
@@ -20,6 +19,14 @@ echo "$0 $@"  # Print the command line for logging
 . ./cmd.sh
 . ./path.sh
 . ./utils/parse_options.sh
+
+n_speakers_test=$(cat data/test/spk2utt| wc -l)
+njobs=$(($(nproc)-1))
+if [ $njobs -le $n_speakers_test ]; then
+  decode_nj=$njobs
+else
+  decode_nj=$n_speakers_test
+fi
 
 
 if ! cuda-compiled; then

@@ -8,18 +8,18 @@ stage=14
 
 gmm=tri3b
 nnet3_affix=_online_cmn
-#affix=1k #tdnn
-affix=1a76b #cnntdnn
+affix=1k #tdnn
+#affix=1a76b #cnntdnn
 tree_affix=
-lang_test=data/lang_test_SRILM
+lang_test=data/lang_test
 
 train_set=train
 test_sets=test
 test_online_decoding=true
 
 train_stage=-10
-#online_cmvn=true #tdnn
-online_cmvn=false #cnn-tdnn
+online_cmvn=true #tdnn
+#online_cmvn=false #cnn-tdnn
 num_epochs=5
 
 srand=0
@@ -49,6 +49,8 @@ where "nvcc" is installed.
 EOF
 fi
 
+sudo nvidia-smi -c 3
+
 nspeakers=$(cat data/test/spk2utt| wc -l)
 
 tree_dir=exp/chain${nnet3_affix}/tree_sp${tree_affix:+_$tree_affix}
@@ -74,7 +76,7 @@ if [ $stage -le 14 ]; then
     --trainer.num-epochs=$num_epochs \
     --trainer.frames-per-iter=3000000 \
     --trainer.optimization.num-jobs-initial=2 \
-    --trainer.optimization.num-jobs-final=8 \
+    --trainer.optimization.num-jobs-final=2 \
     --trainer.optimization.initial-effective-lrate=0.002 \
     --trainer.optimization.final-effective-lrate=0.0002 \
     --trainer.num-chunk-per-minibatch=128,64 \

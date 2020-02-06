@@ -8,7 +8,7 @@ gmm=tri3b
 online_cmvn_iextractor=true
 nnet3_affix=_online_cmn
 train_set=train
-test_sets=test
+test_sets=test_35
 stage=0
 
 echo "$0 $@"  # Print the command line for logging
@@ -17,7 +17,7 @@ echo "$0 $@"  # Print the command line for logging
 . ./path.sh
 . ./utils/parse_options.sh
 
-n_speaker_test=$(cat data/test/spk2utt| wc -l)
+n_speakers_test=$(cat data/test/spk2utt| wc -l)
 
 if ! cuda-compiled; then
   cat <<EOF && exit 1
@@ -32,7 +32,7 @@ fi
 # run those things.
 local/nnet3/run_ivector_common.sh --stage $stage \
                                   --njobs $njobs \
-                                  --n_speaker_test $n_speaker_test \
+                                  --n_speakers_test $n_speakers_test \
                                   --online_cmvn_iextractor $online_cmvn_iextractor \
                                   --train_set $train_set \
                                   --test_sets $test_sets \
