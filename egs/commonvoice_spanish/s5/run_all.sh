@@ -18,15 +18,7 @@ train_set=train
 test_set=test
 ./2_feature_extraction.sh --njobs $njobs --stage $stage --train_set $train_set --test_set $test_set
 
-# DATA AUGMENTATION
-stage=0
-aug_list="reverb babble music noise clean" # Original train dir is referred to as `clean`
-num_reverb_copies=1
-use_ivectors=false
-train_set=train
-clean_ali=tri3b_ali
-./2a_data_aug.sh --stage $stage --aug_list $aug_list --num_reverb_copies $num_reverb_copies --use_ivectors $use_ivectors \
-    --train_set $train_set --clean_ali $clean_ali
+
 
 # MONOPHONE TRAINING
 # generate mono & mono_ali
@@ -58,6 +50,16 @@ njobs=$(($(nproc)-1))
 train=train #train_aug
 tri2b_ali=tri2b_ali #tri2b_train_aug_ali
 ./6_sat_training.sh --njobs $njobs --train $train --tri2b_ali $tri2b_ali
+
+# DATA AUGMENTATION
+stage=0
+aug_list="reverb babble music noise clean" # Original train dir is referred to as `clean`
+num_reverb_copies=1
+use_ivectors=false
+train_set=train
+clean_ali=tri3b_ali
+./6a_data_aug.sh --stage $stage --aug_list $aug_list --num_reverb_copies $num_reverb_copies --use_ivectors $use_ivectors \
+    --train_set $train_set --clean_ali $clean_ali
 
 # IVECTOR
 # generates ivectors and speed perturbated data + low & hires mfcc

@@ -51,14 +51,11 @@ if [ $stage -le 2 ]; then
   local/prepare_dict.sh
 fi
 
-
 if [ $stage -le 3 ]; then
   utils/prepare_lang.sh \
     data/local/dict "<UNK>" \
     data/local/lang data/lang
 fi
-
-exit 1
 
 if [ $stage -le 4 ]; then
   mkdir -p $tmpdir/subs/lm
