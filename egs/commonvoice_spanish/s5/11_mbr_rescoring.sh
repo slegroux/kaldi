@@ -6,9 +6,9 @@ set -euo pipefail
 
 stage=15
 
-data=test
+data=test_35
 lang=lang_chain
-decode_dir=
+decode_dir=$1
 
 echo "$0 $@"  # Print the command line for logging
 
@@ -24,5 +24,6 @@ decode_dir_mbr=$decode_dir.mbr
 if [ $stage -eq 15 ]; then
   cp -r $decode_dir{,.mbr}
   local/score_mbr.sh data/$data data/$lang $decode_dir_mbr
-  for x in $decode_dir_mbr; do [ -d $x ] && grep WER $x/wer_* | utils/best_wer.sh; done
+  echo "MBR rescoring" | tee -a WER.txt
+  for x in $decode_dir_mbr; do [ -d $x ] && grep WER $x/wer_* | utils/best_wer.sh; done |tee -a WER.txt
 fi

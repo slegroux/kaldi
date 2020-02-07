@@ -2,10 +2,13 @@
 
 mfcc_conf=conf/mfcc_hires.conf
 cmvn_conf=conf/online_cmvn.conf
-lang=data/lang_test_IRSTLM
+lang=data/lang_test
 extractor=exp/nnet3_online_cmn/extractor
-model=exp/chain/cnn_tdnn1a76b_sp
-online_model=exp/chain/cnn_tdnn1a76b_sp_online
+#model=exp/chain/cnn_tdnn1a76b_sp
+model=exp/chain/tdnn1k_sp
+#online_model=exp/chain/cnn_tdnn1a76b_sp_online
+online_model=exp/chain/tdnn1k_sp_online
+
 data_test=test
 
 # steps/online/nnet3/prepare_online_decoding.sh \
