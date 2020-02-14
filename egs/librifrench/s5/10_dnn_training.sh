@@ -18,6 +18,7 @@ test_sets=test
 train_stage=-10
 #online_cmvn=true #tdnn
 online_cmvn=false #cnn-tdnn
+num_epochs=5
 
 srand=0
 chunk_width=140,100,160
@@ -27,13 +28,16 @@ reporting_email=
 
 xent_regularize=0.1
 
-dir=exp/chain${nnet3_affix}/tdnn${affix}_sp
+
 
 echo "$0 $@"  # Print the command line for logging
 
 . ./cmd.sh
 . ./path.sh
 . ./utils/parse_options.sh
+
+
+dir=exp/chain${nnet3_affix}/tdnn${affix}_sp
 
 if ! cuda-compiled; then
   cat <<EOF && exit 1
@@ -65,7 +69,7 @@ if [ $stage -le 14 ]; then
     --trainer.add-option="--optimization.memory-compression-level=2" \
     --trainer.srand=$srand \
     --trainer.max-param-change=2.0 \
-    --trainer.num-epochs=300 \
+    --trainer.num-epochs=$num_epochs \
     --trainer.frames-per-iter=3000000 \
     --trainer.optimization.num-jobs-initial=2 \
     --trainer.optimization.num-jobs-final=8 \

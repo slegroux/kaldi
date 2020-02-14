@@ -217,7 +217,7 @@ if [ $stage -le 14 ]; then
     --egs.dir="$common_egs_dir" \
     --egs.opts="--frames-overlap-per-eg 0" \
     --cleanup.remove-egs=$remove_egs \
-    --use-gpu=true \
+    --use-gpu=wait \
     --reporting.email="$reporting_email" \
     --feat-dir=$train_data_dir \
     --tree-dir=$tree_dir \

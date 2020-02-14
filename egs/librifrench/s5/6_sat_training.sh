@@ -19,7 +19,7 @@ if [ $stage == 9 ]; then
   echo ============================================================================
   
   #Train GMM SAT model based on Tri2b_ali
-  steps/train_sat.sh 4000 60000 data/train data/lang exp/tri2b_ali exp/tri3b
+  steps/train_sat.sh 4000 60000 data/${train} data/lang exp/${tri2b_ali} exp/${tri3b}
 
   #Decoder
   for lm in SRILM; do

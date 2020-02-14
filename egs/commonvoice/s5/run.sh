@@ -5,7 +5,7 @@
 # Copyright 2017   Ewald Enzinger
 # Apache 2.0
 
-data=$HOME/cv_corpus_v1
+data=/data/cv_corpus_v1
 data_url=https://common-voice-data-download.s3.amazonaws.com/cv_corpus_v1.tar.gz
 
 . ./cmd.sh
@@ -154,7 +154,7 @@ fi
 
 # Train a chain model
 if [ $stage -le 8 ]; then
-  local/chain/run_tdnn.sh --stage 0
+  local/chain/run_tdnn.sh --stage 5
 fi
 
 # Don't finish until all background decoding jobs are finished.
