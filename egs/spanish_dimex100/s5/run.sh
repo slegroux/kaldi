@@ -10,7 +10,7 @@
 train_cmd="utils/run.pl"
 decode_cmd="utils/run.pl"
 
-CORPUS_DIR="CorpusDimex100"
+CORPUS_DIR=$DATA/Spanish/CorpusDimex100
 
 N_HMM=2000 # leaves
 N_GAUSSIANS=11000

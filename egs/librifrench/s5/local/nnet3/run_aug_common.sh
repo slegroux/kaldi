@@ -7,7 +7,7 @@
 set -e
 stage=0
 aug_list="reverb music noise babble clean"  #clean refers to the original train dir
-use_ivectors=true
+use_ivectors=false
 num_reverb_copies=1
 sampling_rate=16000
 
@@ -15,7 +15,6 @@ sampling_rate=16000
 clean_ali=tri3b_ali
 
 # train directories for ivectors and TDNNs
-
 train_set=train
 test_set=test
 ivector_trainset=train_ivec_nodup
@@ -32,6 +31,7 @@ lda_mllt_ali=tri2_ali_${n_utts_train}_nodup
 #ivector_trainset=train_${n_utts_train}_nodup
 
 if [ $stage -le 0 ]; then
+  ### generates data/train_reverb
   # Adding simulated RIRs to the original data directory
   echo "$0: Preparing data/${train_set}_reverb directory"
 
@@ -42,7 +42,7 @@ if [ $stage -le 0 ]; then
   fi
 
   if [ ! -f data/$train_set/reco2dur ]; then
-    utils/data/get_reco2dur.sh --nj 6 --cmd "$train_cmd" data/$train_set || exit 1;
+    utils/data/get_reco2dur.sh --nj $(nproc) --cmd "$train_cmd" data/$train_set || exit 1;
   fi
 
   # Make a version with reverberated speech
@@ -97,6 +97,7 @@ if [ $stage -le 1 ]; then
     fi
   done
   utils/combine_data.sh data/${train_set}_aug $combine_str
+  ## train_aug = noise+music+noise+babble
 fi
 
 if [ $stage -le 2 ]; then
@@ -104,10 +105,6 @@ if [ $stage -le 2 ]; then
   # To be used later to generate alignments for augmented data
   echo "$0: Extracting low-resolution MFCCs for the augmented data. Useful for generating alignments"
   mfccdir=mfcc_aug
-  if [[ $(hostname -f) == *.clsp.jhu.edu ]] && [ ! -d $mfccdir/storage ]; then
-    date=$(date +'%m_%d_%H_%M')
-    utils/create_split_dir.pl /export/b0{1,2,3,4}/$USER/kaldi-data/mfcc/swbd-$date/s5c/$mfccdir/storage $mfccdir/storage
-  fi
   steps/make_mfcc.sh --cmd "$train_cmd" --nj 50 \
                      data/${train_set}_aug exp/make_mfcc/${train_set}_aug $mfccdir
   steps/compute_cmvn_stats.sh data/${train_set}_aug exp/make_mfcc/${train_set}_aug $mfccdir
@@ -135,15 +132,12 @@ if [ $stage -le 3 ] && $generate_alignments; then
   steps/copy_ali_dir.sh --nj 40 --cmd "$train_cmd" \
     --include-original "$include_original" --prefixes "$prefixes" \
     data/${train_set}_aug exp/${clean_ali} exp/${clean_ali}_aug
+
+  ## clean_ali=tri3b_ali
 fi
 
 if [ $stage -le 4 ]; then
   mfccdir=mfcc_hires
-  if [[ $(hostname -f) == *.clsp.jhu.edu ]] && [ ! -d $mfccdir/storage ]; then
-    date=$(date +'%m_%d_%H_%M')
-    utils/create_split_dir.pl /export/b0{1,2,3,4}/$USER/kaldi-data/mfcc/swbd-$date/s5c/$mfccdir/storage $mfccdir/storage
-  fi
-
   for dataset in ${train_set}_aug; do
     echo "$0: Creating hi resolution MFCCs for dir data/$dataset"
     utils/copy_data_dir.sh data/$dataset data/${dataset}_hires
@@ -160,6 +154,7 @@ if [ $stage -le 4 ]; then
 fi
 
 if [ $stage -le 5 ]; then
+  # hires mfcc for test set
   mfccdir=mfcc_hires
   for dataset in $test_set $maybe_rt03; do
     echo "$0: Creating hi resolution MFCCs for data/$dataset"
@@ -184,8 +179,10 @@ if [ "$use_ivectors" == "true" ]; then
     # we don't extract hi res features again for ivector training data
     # we take it from the ms features extracted on the entire training set
     # First augment the train_100k_nodup directory which is used to train the i-vector extractor in baseline
+    # ivector_trainset=train_ivec_nodup
+    # train_set=train
     utils/copy_data_dir.sh data/${train_set}_aug_hires data/${ivector_trainset}_aug_hires
-    utils/filter_scp.pl -f 2 data/${ivector_trainset}/utt2spk data/${train_set}_aug_hires/utt2uniq | \
+    utils/filter_scp.pl -f 2 data/${ivector_trainset}_aug_hires/utt2spk data/${train_set}_aug_hires/utt2uniq | \
         utils/filter_scp.pl - data/${train_set}_aug_hires/utt2spk > data/${ivector_trainset}_aug_hires/utt2spk
     utils/fix_data_dir.sh data/${ivector_trainset}_aug_hires
     exit 1
@@ -196,6 +193,7 @@ if [ "$use_ivectors" == "true" ]; then
     steps/compute_cmvn_stats.sh data/${ivector_trainset}_aug_hires exp/make_hires/${ivector_trainset} $mfccdir;
     utils/fix_data_dir.sh data/${ivector_trainset}_aug_hires
   fi
+  
 
   # ivector extractor training
   if [ $stage -le 7 ]; then

@@ -2,6 +2,7 @@
 
 # Set -e here so that we catch if any executable fails immediately
 set -euo pipefail
+set -x
 
 stage=14
 
@@ -12,14 +13,14 @@ affix=1a76b #cnntdnn
 tree_affix=
 lang_test=data/lang_test_SRILM
 
-test_online_decoding=true
-
 train_set=train
 test_sets=test
+test_online_decoding=true
 
 train_stage=-10
 #online_cmvn=true #tdnn
 online_cmvn=false #cnn-tdnn
+num_epochs=5
 
 srand=0
 chunk_width=140,100,160
@@ -29,13 +30,15 @@ reporting_email=
 
 xent_regularize=0.1
 
-dir=exp/chain${nnet3_affix}/tdnn${affix}_sp
 
 echo "$0 $@"  # Print the command line for logging
 
 . ./cmd.sh
 . ./path.sh
 . ./utils/parse_options.sh
+
+
+dir=exp/chain${nnet3_affix}/tdnn${affix}_sp
 
 if ! cuda-compiled; then
   cat <<EOF && exit 1
@@ -51,7 +54,6 @@ tree_dir=exp/chain${nnet3_affix}/tree_sp${tree_affix:+_$tree_affix}
 train_ivector_dir=exp/nnet3${nnet3_affix}/ivectors_${train_set}_sp_hires
 train_data_dir=data/${train_set}_sp_hires
 lat_dir=exp/chain${nnet3_affix}/${gmm}_${train_set}_sp_lats
-lang=data/lang_chain
 #sudo nvidia-smi -c 3
 
 if [ $stage -le 14 ]; then
@@ -68,7 +70,7 @@ if [ $stage -le 14 ]; then
     --trainer.add-option="--optimization.memory-compression-level=2" \
     --trainer.srand=$srand \
     --trainer.max-param-change=2.0 \
-    --trainer.num-epochs=300 \
+    --trainer.num-epochs=$num_epochs \
     --trainer.frames-per-iter=3000000 \
     --trainer.optimization.num-jobs-initial=2 \
     --trainer.optimization.num-jobs-final=8 \
@@ -101,7 +103,7 @@ if [ $stage -le 16 ]; then
 
   for data in $test_sets; do
     (
-      nspkeakers=$(wc -l <data/${data}_hires/spk2utt)
+      nspk=$(wc -l <data/${data}_hires/spk2utt)
       steps/nnet3/decode.sh \
           --acwt 1.0 --post-decode-acwt 10.0 \
           --frames-per-chunk $frames_per_chunk \
@@ -129,7 +131,6 @@ fi
 if $test_online_decoding && [ $stage -le 17 ]; then
   # note: if the features change (e.g. you add pitch features), you will have to
   # change the options of the following command line.
-  set -x
   steps/online/nnet3/prepare_online_decoding.sh \
     --mfcc-config conf/mfcc_hires.conf \
     --online-cmvn-config conf/online_cmvn.conf \
