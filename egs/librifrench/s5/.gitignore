@@ -4,5 +4,12 @@ mfcc_hires/*
 steps/*
 utils/*
 RIRS_NOISES/*
+report/
+report_rnnlm/
+rnnlm
+steps
+test_utf.py
+utils
+*.gz
 
 

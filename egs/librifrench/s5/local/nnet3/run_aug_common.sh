@@ -216,7 +216,6 @@ if [ "$use_ivectors" == "true" ]; then
       data/lang exp/${lda_mllt_ali}_aug exp/nnet3/tri3b
   fi
 
-
   if [ $stage -le 8 ]; then
     # To train a diagonal UBM we don't need very much data, so use the smallest subset.
     echo "$0: Training diagonal UBM for i-vector extractor"

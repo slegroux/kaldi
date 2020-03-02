@@ -31,7 +31,6 @@ reporting_email=
 xent_regularize=0.1
 
 
-
 echo "$0 $@"  # Print the command line for logging
 
 . ./cmd.sh
