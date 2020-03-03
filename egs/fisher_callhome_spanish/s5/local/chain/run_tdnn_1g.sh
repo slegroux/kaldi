@@ -220,7 +220,7 @@ if [ $stage -le 20 ]; then
     --trainer.max-param-change 2.0 \
     --trainer.num-epochs 4 \
     --trainer.frames-per-iter 5000000 \
-    --trainer.optimization.num-jobs-initial 1 \
+    --trainer.optimization.num-jobs-initial 2 \
     --trainer.optimization.num-jobs-final=2 \
     --trainer.optimization.initial-effective-lrate 0.0005 \
     --trainer.optimization.final-effective-lrate 0.00005 \
@@ -232,7 +232,7 @@ if [ $stage -le 20 ]; then
     --egs.dir "$common_egs_dir" \
     --egs.opts "--frames-overlap-per-eg 0" \
     --cleanup.remove-egs $remove_egs \
-    --use-gpu true \
+    --use-gpu wait \
     --feat-dir $train_data_dir \
     --tree-dir $tree_dir \
     --lat-dir exp/tri5a_lats_nodup_sp \

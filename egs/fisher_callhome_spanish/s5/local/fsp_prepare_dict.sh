@@ -9,7 +9,7 @@ if [ $# -lt 1 ]; then
   exit 1;
 fi
 
-stage=0
+stage=4
 
 dir=`pwd`/data/local/dict
 datadir=`pwd`/data/local/data/train_all
@@ -86,7 +86,9 @@ if [ $stage -le 3 ]; then
   #paste -d ' ' $tmpdir/uniquewords $tmpdir/lexicon_one_column | grep -v '#' > $tmpdir/lexicon.1
 fi
 
+set -x
 if [ $stage -le 4 ]; then
+
   # silence phones, one per line.
   for w in sil laughter noise oov; do echo $w; done > $dir/silence_phones.txt
   echo sil > $dir/optional_silence.txt
@@ -95,11 +97,11 @@ if [ $stage -le 4 ]; then
   cat $dir/silence_phones.txt| awk '{printf("%s ", $1);} END{printf "\n";}' > \
   $dir/extra_questions.txt || exit 1;
 
-  # Remove [] chars from phones
-  cat $tmpdir/phones | awk '{if ($1 != "_" && $1 != "[" && $1 != "]") {print;}}' > $tmpdir/phones.1
-  rm $tmpdir/phones
-  mv $tmpdir/phones.1 $tmpdir/phones
-  cp $tmpdir/phones $dir/nonsilence_phones.txt
+  # # Remove [] chars from phones
+  # cat $tmpdir/phones | awk '{if ($1 != "_" && $1 != "[" && $1 != "]") {print;}}' > $tmpdir/phones.1
+  # rm $tmpdir/phones
+  # mv $tmpdir/phones.1 $tmpdir/phones
+  # cp $tmpdir/phones $dir/nonsilence_phones.txt
 
   if [ -f $tmpdir/lexicon.2 ]; then rm $tmpdir/lexicon.2; fi
   cp "$tmpdir/lexicon.1" "$tmpdir/lexicon.2"

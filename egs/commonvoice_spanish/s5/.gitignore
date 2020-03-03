@@ -1,8 +1,0 @@
-exp/
-data/
-data.bu/
-mfcc/
-local/
-mfcc_aug/
-*.zip
-*.tar.gz

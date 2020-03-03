@@ -10,13 +10,13 @@ train_sgmm2=false
 
 # call the next line with the directory where the Spanish Fisher data is
 # (the values below are just an example).
-sfisher_speech=/export/corpora/LDC/LDC2010S01
-sfisher_transcripts=/export/corpora/LDC/LDC2010T04
-spanish_lexicon=/export/corpora/LDC/LDC96L16
+sfisher_speech=$DATA/LDC/Fisher_es/LDC2010S01
+sfisher_transcripts=$DATA/LDC/Fisher_es/LDC2010T04
+spanish_lexicon=santiago.txt
 split=local/splits/split_fisher
 
-callhome_speech=/export/corpora/LDC/LDC96S35
-callhome_transcripts=/export/corpora/LDC/LDC96T17
+callhome_speech=$DATA/LDC/Callhome_es/LDC96S35
+callhome_transcripts=$DATA/LDC/Callhome_es/LDC96T17
 split_callhome=local/splits/split_callhome
 
 mfccdir=`pwd`/mfcc
@@ -25,18 +25,19 @@ mfccdir=`pwd`/mfcc
 if [ -f path.sh ]; then . ./path.sh; fi
 . parse_options.sh || exit 1;
 
-set -e
+set -ex
 
 if [ $stage -le 1 ]; then
-  local/fsp_data_prep.sh $sfisher_speech $sfisher_transcripts
+  #local/fsp_data_prep.sh $sfisher_speech $sfisher_transcripts
 
-  local/callhome_data_prep.sh $callhome_speech $callhome_transcripts
+  #local/callhome_data_prep.sh $callhome_speech $callhome_transcripts
 
   # The lexicon is created using the LDC spanish lexicon, the words from the
   # fisher spanish corpus. Additional (most frequent) words are added from the
   # ES gigaword corpus to bring the total to 64k words. The ES frequency sorted
   # wordlist is downloaded if it is not available.
-  local/fsp_prepare_dict.sh $spanish_lexicon
+  
+  # local/fsp_prepare_dict.sh $spanish_lexicon
 
   # Added c,j, v to the non silences phones manually
   utils/prepare_lang.sh data/local/dict "<unk>" data/local/lang data/lang

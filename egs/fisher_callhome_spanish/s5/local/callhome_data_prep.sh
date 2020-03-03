@@ -12,7 +12,7 @@
 # sorted on utterance id (missing transcriptions should be removed from the
 # scp file using e.g. scripts/filter_scp.pl)
 
-stage=0
+stage=5
 
 export LC_ALL=C
 
@@ -51,8 +51,13 @@ then
 vely"
         exit 1;
 fi
+set -xe
 
-if [ ! -d links/LDC96S35/CALLHOME/SPANISH/SPEECH/DEVTEST -o ! -d links/LDC96S35/CALLHOME/SPANISH/SPEECH/EVLTEST -o ! -d links/LDC96S35/CALLHOME/SPANISH/SPEECH/TRAIN ];
+dev_up=CALLHOME/SPANISH/SPEECH/DEVTEST
+eval_up=CALLHOME/SPANISH/SPEECH/EVLTEST
+train_up=CALLHOME/SPANISH/SPEECH/TRAIN
+
+if [ ! -d links/LDC96S35/${dev_up,,} -o ! -d links/LDC96S35/${eval_up,,} -o ! -d links/LDC96S35/${train_up,,} ];
 then
         echo "Dev, Eval or Train directories missing or not properly organised within the speech data dir"
         exit 1;
@@ -65,16 +70,16 @@ then
         exit 1;
 fi
 
-speech_train=$dir/links/LDC96S35/CALLHOME/SPANISH/SPEECH/TRAIN
-speech_dev=$dir/links/LDC96S35/CALLHOME/SPANISH/SPEECH/DEVTEST
-speech_test=$dir/links/LDC96S35/CALLHOME/SPANISH/SPEECH/EVLTEST
+speech_train=$dir/links/LDC96S35/${train_up,,}
+speech_dev=$dir/links/LDC96S35/${dev_up,,}
+speech_test=$dir/links/LDC96S35/${eval_up,,}
 transcripts_train=$dir/links/LDC96T17/callhome_spanish_trans_970711/transcrp/train
 transcripts_dev=$dir/links/LDC96T17/callhome_spanish_trans_970711/transcrp/devtest
 transcripts_test=$dir/links/LDC96T17/callhome_spanish_trans_970711/transcrp/evltest
 
-fcount_train=`find ${speech_train} -iname '*.SPH' | wc -l`
-fcount_dev=`find ${speech_dev} -iname '*.SPH' | wc -l`
-fcount_test=`find ${speech_test} -iname '*.SPH' | wc -l`
+fcount_train=`find ${speech_train} -iname '*.sph' | wc -l`
+fcount_dev=`find ${speech_dev} -iname '*.sph' | wc -l`
+fcount_test=`find ${speech_test} -iname '*.sph' | wc -l`
 fcount_t_train=`find ${transcripts_train} -iname '*.txt' | wc -l`
 fcount_t_dev=`find ${transcripts_dev} -iname '*.txt' | wc -l`
 fcount_t_test=`find ${transcripts_test} -iname '*.txt' | wc -l`
@@ -111,6 +116,7 @@ if [ $stage -le 1 ]; then
   mv $tmpdir/callhome_reco2file_and_channel $dir/callhome_train_all/
 fi
 
+
 if [ $stage -le 2 ]; then
   sort $tmpdir/callhome.text.1 | sed 's/^\s\s*|\s\s*$//g' | sed 's/\s\s*/ /g' > $dir/callhome_train_all/callhome.text
 
@@ -125,12 +131,12 @@ if [ $stage -le 2 ]; then
 fi
 
 if [ $stage -le 3 ]; then
-  for f in `cat $tmpdir/callhome_train_sph.flist`; do
-    # convert to absolute path
-    make_absolute.sh $f
-  done > $tmpdir/callhome_train_sph_abs.flist
+  # for f in `cat $tmpdir/callhome_train_sph.flist`; do
+  #   # convert to absolute path
+  #   make_absolute.sh $f
+  # done > $tmpdir/callhome_train_sph_abs.flist
 
-  cat $tmpdir/callhome_train_sph_abs.flist | perl -ane 'm:/([^/]+)\.SPH$: || die "bad line $_; ";  print lc($1)," $_"; ' > $tmpdir/callhome_sph.scp
+  cat $tmpdir/callhome_train_sph_abs.flist | perl -ane 'm:/([^/]+)\.sph$: || die "bad line $_; ";  print lc($1)," $_"; ' > $tmpdir/callhome_sph.scp
   cat $tmpdir/callhome_sph.scp | awk -v sph2pipe=$sph2pipe '{printf("%s-A %s -f wav -p -c 1 %s |\n", $1, sph2pipe, $2); printf("%s-B %s -f wav -p -c 2 %s |\n", $1, sph2pipe, $2);}' | \
   sort -k1,1 -u  > $dir/callhome_train_all/callhome_wav.scp || exit 1;
 fi
