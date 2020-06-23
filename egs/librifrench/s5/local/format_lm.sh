@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# Copyright (C) 2016, Linagora, Ilyes Rebai
-
 # begin configuration section
 src_dir=data/lang
 lm_dir=data/local/lm

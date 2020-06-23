@@ -41,23 +41,26 @@ utils/fix_data_dir.sh ${data_dir}_hires
 
 # ivector
 #ivector_model=$DATA/kaldi_models/0007_voxceleb_v1_1a
-iVectorExtractor=exp/nut-webex-epoch10/extractors/rdi.2019.03.26.ivector_extractor
+# iVectorExtractor=exp/nut-webex-epoch10/extractors/rdi.2019.03.26.ivector_extractor
+iVectorExtractor=/Users/syl20/Data/models/en/nut-1120-big-conv-epoch10-rnn2/model/extractors/rdi.2019.03.26.ivector_extractor
 #ivector_model=.
 #iVectorExtractor=$ivector_model/exp/extractor
 #iVectorExtractor=exp/ivector_extractor
 iVectorDir=${data_dir}_hires/ivectors
 #hires_conf=conf/mfcc_hires.conf
 #ivector_mfcc_conf=$ivector_model/conf/mfcc.conf
-ivector_mfcc_conf=conf/mfcc_hires.conf
+#ivector_mfcc_conf=c
+ivector_mfcc_conf=/Users/syl20/Data/models/en/nut-1120-big-conv-epoch10-rnn2/model/extractors/conf/mfcc_hires.conf
 
 # xvectors
-xvector_model=$DATA/kaldi_models/0007_voxceleb_v2_1a
+xvector_model=$DATA/models/en/0007_voxceleb_v2_1a
 #xvector_model=$DATA/kaldi_models/0008_sitw_v2_1a
 xVectorExtractor=$xvector_model/exp/xvector_nnet_1a
 xVectorDir=$data_dir/xvectors
 
-xvector_vad_conf=conf/vad.conf
-xvector_mfcc_conf=conf/mfcc.conf
+#xvector_vad_conf=conf/vad.conf
+xvector_vad_conf=/Users/syl20/Data/models/en/nut-1120-big-conv-epoch10-rnn2/model/extractors/xvector_voxceleb/conf/vad.conf
+xvector_mfcc_conf=/Users/syl20/Data/models/en/nut-1120-big-conv-epoch10-rnn2/model/extractors/xvector_voxceleb/conf/mfcc.conf
 
 # directory to save ivectors and xvectors after being merged
 newIVectorDir=$data_dir/new_ivectors

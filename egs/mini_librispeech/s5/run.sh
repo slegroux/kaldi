@@ -16,9 +16,9 @@ set -euo pipefail
 
 mkdir -p $data
 
-for part in dev-clean-2 train-clean-5; do
-  local/download_and_untar.sh $data $data_url $part
-done
+# for part in dev-clean-2 train-clean-5; do
+#   local/download_and_untar.sh $data $data_url $part
+# done
 
 if [ $stage -le 0 ]; then
   local/download_lm.sh $lm_url $data data/local/lm
@@ -28,7 +28,7 @@ if [ $stage -le 1 ]; then
   # format the data as Kaldi data directories
   for part in dev-clean-2 train-clean-5; do
     # use underscore-separated names in data directories.
-    local/data_prep.sh $data/LibriSpeech/$part data/$(echo $part | sed s/-/_/g)
+    local/data_prep.sh $DATA/LibriSpeech/$part data/$(echo $part | sed s/-/_/g)
   done
 
   local/prepare_dict.sh --stage 3 --nj 30 --cmd "$train_cmd" \

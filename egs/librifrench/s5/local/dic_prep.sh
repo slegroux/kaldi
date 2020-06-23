@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# Copyright (C) 2016, Linagora, Ilyes Rebai
-
 # begin configuration section
 dir=data/local/dict # destination dictionary directory
 text=data/train # training data file

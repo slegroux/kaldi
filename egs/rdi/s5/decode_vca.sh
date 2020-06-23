@@ -20,7 +20,8 @@ i=0
 dev_data=$1
 
 for i in $(seq $step); do
-  ./runNut.sh --model_dir $model_dir --graph_dir $graph_dir --tag $tag --stage $i --nj $nj --ndecode_jobs $nj $dev_data
+  ./runNut.sh --model_dir $model_dir --graph_dir $graph_dir --tag $tag \
+    --stage $i --nj $nj --ndecode_jobs $nj $dev_data
 done
 
 

@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# Copyright (C) 2016, Linagora, Ilyes Rebai
-
 # Begin configuration section.
 apply_adaptation=false # Language model toolkit
 sample_rate=16000 # Sample rate of wav file.

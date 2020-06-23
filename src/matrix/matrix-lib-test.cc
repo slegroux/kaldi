@@ -4589,7 +4589,22 @@ template<typename Real> static void UnitTestTriVecSolver() {
 }
 
 
+template<typename Real> void UnitTestAddVec(){
+  int32 dim = 1 + Rand() % 10;
+  Vector<Real> v(dim), w(dim);
+  v.SetRandn();
+  w.SetRandn();
+  Vector<Real> w2(w);
+  Real f = RandGauss();
+  w.AddVec(f,v);
+  for (int i=0;i<dim;i++){
+    Real a = w(i), b = f* w2(i) + v(i);
+    AssertEqual(a,b);
+  }
+}
+
 template<typename Real> static void MatrixUnitTest(bool full_test) {
+  UnitTestAddVec<Real>();
   UnitTestLinearCgd<Real>();
   UnitTestGeneralMatrix<BaseFloat>();
   UnitTestTridiagonalize<Real>();
